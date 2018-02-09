@@ -14,9 +14,9 @@ class Thread extends Model
     {
         parent::boot();
 
-        static::addGlobalScope('replyCount', function ($builder) {
-            $builder->withCount('replies');
-        });
+//        static::addGlobalScope('replyCount', function ($builder) {
+//            $builder->withCount('replies');
+//        });
 
         // Sima $thread->replies()->delete() nem működne az activity
         static::deleting(function ($thread) {

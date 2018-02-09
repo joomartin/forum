@@ -11,7 +11,7 @@ class ThreadFilter extends Filter
     /**
      * @var string[]
      */
-    protected $filters = ['by', 'popular'];
+    protected $filters = ['by', 'popular', 'unanswered'];
 
     protected function by(string $username): Builder
     {
@@ -25,5 +25,10 @@ class ThreadFilter extends Filter
         return $this->builder
             ->orderBy('replies_count', 'desc')
             ->limit(10);
+    }
+
+    protected function unanswered()
+    {
+        return $this->builder->where('replies_count', 0);
     }
 }

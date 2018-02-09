@@ -48,6 +48,8 @@
             refresh(response) {
                 this.dataSet = response.data;
                 this.items = response.data.data;
+
+                window.scrollTo(0, 0);
             }
         }
     }
