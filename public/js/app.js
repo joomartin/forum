@@ -59818,14 +59818,21 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['dataSet'],
+    props: {
+        dataSet: {
+            type: Object
+        },
+        maxPage: {
+            type: Number,
+            default: 10
+        }
+    },
 
     data: function data() {
         return {
             page: 1,
             prevUrl: false,
-            nextUrl: false,
-            maxPages: 7
+            nextUrl: false
         };
     },
 
@@ -59853,14 +59860,14 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             }
 
             if (this.isPageAtBeginning()) {
-                return [].concat(_toConsumableArray(__WEBPACK_IMPORTED_MODULE_0_lodash___default.a.range(1, this.maxPages)), [this.dataSet.last_page]);
+                return [].concat(_toConsumableArray(__WEBPACK_IMPORTED_MODULE_0_lodash___default.a.range(1, this.maxPage)), [this.dataSet.last_page]);
             }
 
             if (this.isPageAtEnd()) {
-                return [1].concat(_toConsumableArray(this.getLastPagesBy(this.maxPages - 1)));
+                return [1].concat(_toConsumableArray(this.getLastPagesBy(this.maxPage - 1)));
             }
 
-            var quarter = Math.round(this.maxPages / 4);
+            var quarter = Math.round(this.maxPage / 4);
 
             var leftRange = __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.range(2, this.page);
             var rightRange = __WEBPACK_IMPORTED_MODULE_0_lodash___default.a.range(this.page + 1, this.dataSet.last_page);
@@ -59893,7 +59900,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             this.page++;
         },
         isDataSetFits: function isDataSetFits() {
-            return this.dataSet.last_page <= this.maxPages;
+            return this.dataSet.last_page <= this.maxPage;
         },
         isPageAtBeginning: function isPageAtBeginning() {
             return this.page <= 2;

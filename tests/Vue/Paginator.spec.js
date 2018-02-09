@@ -34,7 +34,7 @@ describe('Paginator', () => {
 
     beforeEach(() => {
         wrapper = mount(Paginator);
-        wrapper.setData({ dataSet });
+        wrapper.setData({ dataSet, maxPage: 7 });
     });
 
     it('returns the correct page numbers as an array', () => {

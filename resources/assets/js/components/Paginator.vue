@@ -26,14 +26,21 @@
     import _ from 'lodash';
 
     export default {
-        props: ['dataSet'],
+        props: {
+            dataSet: {
+                type: Object
+            },
+            maxPage: {
+                type: Number,
+                default: 10
+            }
+        },
 
         data() {
             return {
                 page: 1,
                 prevUrl: false,
-                nextUrl: false,
-                maxPages: 7,
+                nextUrl: false
             };
         },
 
@@ -61,7 +68,7 @@
 
                 if (this.isPageAtBeginning()) {
                     return [
-                        ..._.range(1, this.maxPages),
+                        ..._.range(1, this.maxPage),
                         this.dataSet.last_page
                     ];
                 }
@@ -69,11 +76,11 @@
                 if (this.isPageAtEnd()) {
                     return [
                         1,
-                        ...this.getLastPagesBy(this.maxPages - 1)
+                        ...this.getLastPagesBy(this.maxPage - 1)
                     ];
                 }
 
-                const quarter = Math.round(this.maxPages / 4);
+                const quarter = Math.round(this.maxPage / 4);
 
                 const leftRange = _.range(2, this.page);
                 const rightRange = _.range(this.page + 1, this.dataSet.last_page);
@@ -116,7 +123,7 @@
             },
 
             isDataSetFits() {
-                return this.dataSet.last_page <= this.maxPages;
+                return this.dataSet.last_page <= this.maxPage;
             },
 
             isPageAtBeginning() {
