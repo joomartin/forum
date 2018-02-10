@@ -63,6 +63,7 @@ class ThreadController extends Controller
 
     public function show(string $channelId, Thread $thread)
     {
+//        $thread->append('isSubscribedTo');
         return view('threads.show', compact('thread'));
     }
 

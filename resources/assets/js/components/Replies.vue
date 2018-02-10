@@ -22,7 +22,7 @@
 
         data() {
             return {
-                dataSet: false
+                dataSet: {}
             };
         },
 

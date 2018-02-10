@@ -9,6 +9,7 @@ class Thread extends Model
     use RecordsActivity;
 
     protected $with = ['creator', 'channel'];
+    protected $appends = ['isSubscribedTo'];
 
     protected static function boot()
     {
@@ -80,5 +81,12 @@ class Thread extends Model
             ->delete([
                 'user_id'   => $userId ?? auth()->id()
             ]);
+    }
+
+    public function getIsSubscribedToAttribute(): bool
+    {
+        return $this->subscriptions()
+            ->where('user_id', auth()->id())
+            ->exists();
     }
 }
