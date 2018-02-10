@@ -70,4 +70,42 @@ class ThreadTest extends TestCase
 
         $this->assertCount(1, $this->thread->replies);
     }
+
+    /** @test */
+    public function a_thread_can_be_subscribed_to()
+    {
+        // Given we have a thread
+        $thread = create('Thread');
+        // And a user
+        $this->signIn();
+
+        // When the user subscribes to the thread
+        $thread->subscribe();
+
+        // Then it appears in database
+        $this->assertCount(
+            1,
+            $thread->subscriptions()->where('user_id', auth()->id())->get()
+        );
+    }
+
+    /** @test */
+    public function a_thread_can_be_unsubscribed_from()
+    {
+        // Given we have a thread
+        $thread = create('Thread');
+        // And a user
+        $this->signIn();
+
+        $thread->subscribe();
+
+        // When the user unsubscribes from the thread
+        $thread->unsubscribe();
+
+        // Then it appears in database
+        $this->assertCount(
+            0,
+            $thread->subscriptions()->where('user_id', auth()->id())->get()
+        );
+    }
 }
