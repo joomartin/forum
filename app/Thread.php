@@ -57,9 +57,20 @@ class Thread extends Model
         return $this->hasMany(ThreadSubscription::class);
     }
 
-    public function addReply(array $reply): Reply
+    public function addReply(array $replyData): Reply
     {
-        return $this->replies()->create($reply);
+        $reply = $this->replies()->create($replyData);
+        $this->notifySubscribers($reply);
+
+        return $reply;
+    }
+
+    public function notifySubscribers(Reply $reply)
+    {
+        $this->subscriptions
+            ->where('user_id', '!=', $reply->user_id)
+            ->each
+            ->notify($reply);
     }
 
     public function scopeFilter($query, ThreadFilter $filters)
@@ -72,6 +83,8 @@ class Thread extends Model
         $this->subscriptions()->create([
             'user_id'   => $userId ?? auth()->id()
         ]);
+
+        return $this;
     }
 
     public function unsubscribe($userId = null)
@@ -88,5 +101,13 @@ class Thread extends Model
         return $this->subscriptions()
             ->where('user_id', auth()->id())
             ->exists();
+    }
+
+    public function hasUpdatesFor(User $user = null)
+    {
+        $user = $user ?? auth()->user();
+        if (!$user) return false;
+
+        return $this->updated_at > cache($user->visitedThreadCacheKey($this));
     }
 }

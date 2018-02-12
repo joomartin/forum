@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Events\ThreadHasNewReply;
+
 class Reply extends Model
 {
     use Favoritable, RecordsActivity, WithPolicy;
@@ -12,6 +14,7 @@ class Reply extends Model
     protected static function boot()
     {
         parent::boot();
+
         static::created(function ($reply) {
             $reply->thread->increment('replies_count');
         });

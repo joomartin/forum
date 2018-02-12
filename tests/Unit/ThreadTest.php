@@ -3,10 +3,13 @@
 namespace Tests\Unit;
 
 use App\Channel;
+use App\Notifications\ThreadWasUpdated;
 use App\Thread;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -72,6 +75,22 @@ class ThreadTest extends TestCase
     }
 
     /** @test */
+    public function a_thread_notifies_all_registered_subscribers_when_a_reply_is_added()
+    {
+        Notification::fake();
+
+        $this->signIn()
+            ->thread
+            ->subscribe()
+            ->addReply([
+                'body'      => 'foo',
+                'user_id'   => create('User')->id
+            ]);
+
+        Notification::assertSentTo(auth()->user(), ThreadWasUpdated::class);
+    }
+
+    /** @test */
     public function a_thread_can_be_subscribed_to()
     {
         // Given we have a thread
@@ -121,5 +140,22 @@ class ThreadTest extends TestCase
         $thread->subscribe();
 
         $this->assertTrue($thread->isSubscribedTo);
+    }
+
+    /** @test */
+    public function a_thread_can_check_if_auth_user_has_read_all_replies()
+    {
+        $this->signIn();
+
+        $thread = create('Thread');
+
+        tap(auth()->user(), function ($user) use ($thread) {
+            $this->assertTrue($thread->hasUpdatesFor($user));
+
+            $user->read($thread);
+
+            $this->assertFalse($thread->hasUpdatesFor($user));
+        });
+
     }
 }

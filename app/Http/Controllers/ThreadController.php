@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Channel;
 use App\Filters\ThreadFilter;
 use App\Thread;
+use App\ThreadSubscription;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -57,6 +59,8 @@ class ThreadController extends Controller
             'body'          => $request->body
         ]);
 
+        $thread->subscriptions()->create(['user_id' => auth()->id()]);
+
         return redirect($thread->path())
             ->with('flash', 'Your thread has been published');
     }
@@ -64,6 +68,11 @@ class ThreadController extends Controller
     public function show(string $channelId, Thread $thread)
     {
 //        $thread->append('isSubscribedTo');
+
+        if (auth()->check()) {
+            auth()->user()->read($thread);
+        }
+
         return view('threads.show', compact('thread'));
     }
 

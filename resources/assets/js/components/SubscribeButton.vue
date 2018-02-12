@@ -5,6 +5,7 @@
                 'btn-default': !active,
                 'btn-primary': active
             }"
+            v-if="signedIn"
             v-text="text"
             @click="toggle">
 
@@ -24,6 +25,10 @@ export default {
     computed: {
         text() {
             return this.active ? 'Unsubscribe' : 'Subscribe';
+        },
+
+        signedIn() {
+            return window.App.signedIn;
         }
     },
 
