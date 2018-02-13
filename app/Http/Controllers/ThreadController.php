@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Channel;
 use App\Filters\ThreadFilter;
+use App\Inspections\Spam;
 use App\Thread;
 use App\ThreadSubscription;
 use App\User;
@@ -44,13 +45,15 @@ class ThreadController extends Controller
         return view('threads.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, Spam $spam): RedirectResponse
     {
         $this->validate($request, [
             'title' => 'required',
             'body' => 'required',
             'channel_id' => 'required|exists:channels,id',
         ]);
+
+        $spam->detect(request('body'));
 
         $thread = Thread::create([
             'user_id'       => auth()->id(),

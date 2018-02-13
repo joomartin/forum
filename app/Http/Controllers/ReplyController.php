@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Channel;
+use App\Inspections\Spam;
 use App\Reply;
 use App\Thread;
 use Illuminate\Http\RedirectResponse;
@@ -25,20 +26,18 @@ class ReplyController extends Controller
 
     public function store($channelId, Thread $thread)
     {
-        $this->validate(request(), [
-            'body' => 'required'
-        ]);
+        try {
+            $this->validateReply();
 
-        $reply = $thread->addReply([
-            'body'      => request('body'),
-            'user_id'   => auth()->id()
-        ]);
-
-        if (request()->expectsJson()) {
-            return $reply->load('owner');
+            $reply = $thread->addReply([
+                'body'      => request('body'),
+                'user_id'   => auth()->id()
+            ]);
+        } catch (\Exception $ex) {
+            return response('Sorry, your reply could not be saved.', 422);
         }
 
-        return back()->with('flash', 'Your reply has been left');
+        return $reply->load('owner');
     }
 
     public function destroy(Reply $reply)
@@ -56,8 +55,20 @@ class ReplyController extends Controller
 
     public function update(Reply $reply)
     {
-        $this->authorize('update', $reply);
+        try {
+            $this->authorize('update', $reply);
+            $this->validateReply();
+        } catch (\Exception $ex) {
+            return response('Sorry, your reply could not be saved.', 422);
+        }
 
         $reply->update(request(['body']));
+    }
+
+    protected function validateReply()
+    {
+        $this->validate(request(), ['body' => 'required']);
+
+        resolve(Spam::class)->detect(request('body'));
     }
 }
