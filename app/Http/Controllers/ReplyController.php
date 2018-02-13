@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Channel;
-use App\Inspections\Spam;
 use App\Reply;
+use App\Rules\SpamFree;
 use App\Thread;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 
 class ReplyController extends Controller
 {
@@ -27,7 +25,9 @@ class ReplyController extends Controller
     public function store($channelId, Thread $thread)
     {
         try {
-            $this->validateReply();
+            $this->validate(request(), [
+                'body' => ['required', new SpamFree]
+            ]);
 
             $reply = $thread->addReply([
                 'body'      => request('body'),
@@ -57,18 +57,13 @@ class ReplyController extends Controller
     {
         try {
             $this->authorize('update', $reply);
-            $this->validateReply();
+            $this->validate(request(), [
+                'body' => ['required', new SpamFree]
+            ]);
         } catch (\Exception $ex) {
             return response('Sorry, your reply could not be saved.', 422);
         }
 
         $reply->update(request(['body']));
-    }
-
-    protected function validateReply()
-    {
-        $this->validate(request(), ['body' => 'required']);
-
-        resolve(Spam::class)->detect(request('body'));
     }
 }
