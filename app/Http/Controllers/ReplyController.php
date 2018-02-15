@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Channel;
+use App\Http\Requests\CreateReplyRequest;
 use App\Reply;
 use App\Rules\SpamFree;
 use App\Thread;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Validation\ValidationException;
 
 class ReplyController extends Controller
 {
@@ -22,22 +25,13 @@ class ReplyController extends Controller
         return $thread->replies()->paginate(5);
     }
 
-    public function store($channelId, Thread $thread)
+    public function store($channelId, Thread $thread, CreateReplyRequest $form)
     {
-        try {
-            $this->validate(request(), [
-                'body' => ['required', new SpamFree]
-            ]);
+        return $thread->addReply([
+            'body' => request('body'),
+            'user_id' => auth()->id()
+        ])->load('owner');
 
-            $reply = $thread->addReply([
-                'body'      => request('body'),
-                'user_id'   => auth()->id()
-            ]);
-        } catch (\Exception $ex) {
-            return response('Sorry, your reply could not be saved.', 422);
-        }
-
-        return $reply->load('owner');
     }
 
     public function destroy(Reply $reply)
