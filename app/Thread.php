@@ -2,11 +2,12 @@
 
 namespace App;
 
+use App\Events\ThreadReceivedNewReply;
 use App\Filters\ThreadFilter;
 
 class Thread extends Model
 {
-    use RecordsActivity;
+    use RecordsActivity, HasMentionedUsers;
 
     protected $with = ['creator', 'channel'];
     protected $appends = ['isSubscribedTo'];
@@ -60,17 +61,10 @@ class Thread extends Model
     public function addReply(array $replyData): Reply
     {
         $reply = $this->replies()->create($replyData);
-        $this->notifySubscribers($reply);
+
+        event(new ThreadReceivedNewReply($reply));
 
         return $reply;
-    }
-
-    public function notifySubscribers(Reply $reply)
-    {
-        $this->subscriptions
-            ->where('user_id', '!=', $reply->user_id)
-            ->each
-            ->notify($reply);
     }
 
     public function scopeFilter($query, ThreadFilter $filters)

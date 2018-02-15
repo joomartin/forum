@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Channel;
+use App\Events\ThreadWasPublished;
 use App\Filters\ThreadFilter;
 use App\Rules\SpamFree;
 use App\Thread;
@@ -60,6 +61,7 @@ class ThreadController extends Controller
             'body'          => $request->body
         ]);
 
+        event(new ThreadWasPublished($thread));
         $thread->subscriptions()->create(['user_id' => auth()->id()]);
 
         return redirect($thread->path())

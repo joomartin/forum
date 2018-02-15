@@ -6,7 +6,7 @@ use Carbon\Carbon;
 
 class Reply extends Model
 {
-    use Favoritable, RecordsActivity, WithPolicy;
+    use Favoritable, RecordsActivity, WithPolicy, HasMentionedUsers;
 
     protected $with = ['owner', 'favorites'];
     protected $appends = ['favoritesCount', 'isFavorited', 'can'];
