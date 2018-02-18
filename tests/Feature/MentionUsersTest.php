@@ -68,4 +68,15 @@ class MentionUsersTest extends TestCase
         $this->assertStringEndsWith($thread->title, $jane->notifications->first()->data['message']);
     }
 
+    /** @test */
+    public function it_can_fetch_all_mentioned_users_starting_with_goven_characters()
+    {
+        $user = create('User', ['name' => 'JohnDoe']);
+        $user1 = create('User', ['name' => 'JohnDoe2']);
+        $user2 = create('User', ['name' => 'JaneDoe']);
+
+        $result = $this->json('GET', '/api/users', ['name' => 'john']);
+
+        $this->assertCount(2, $result->json());
+    }
 }

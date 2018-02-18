@@ -18,9 +18,6 @@ use Illuminate\View\View;
 
 class ThreadController extends Controller
 {
-    /**
-     * ThreadController constructor.
-     */
     public function __construct()
     {
         $this->middleware('auth')->except( ['index', 'show']);

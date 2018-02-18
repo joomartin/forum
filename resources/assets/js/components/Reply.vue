@@ -16,15 +16,18 @@
 
         <div class="panel-body">
             <div v-if="editing">
-                <div class="form-group">
-                    <textarea class="form-control" v-model="body"></textarea>
-                </div>
+                <form @submit.prevent="update">
+                    <div class="form-group">
+                        <textarea class="form-control" v-model="body" required></textarea>
+                    </div>
 
-                <button class="btn btn-xs btn-primary" @click="update">Update</button>
-                <button class="btn btn-xs btn-link" @click="cancel">Cancel</button>
+                    <button class="btn btn-xs btn-primary" type="submit">Update</button>
+                    <button class="btn btn-xs btn-link" @click.prevent="cancel" type="button">Cancel</button>
+                </form>
+
             </div>
 
-            <div v-else v-text="body"></div>
+            <div v-else v-html="body"></div>
         </div>
 
         <div class="panel-footer level" v-if="data.can.update">
@@ -63,14 +66,23 @@
 
         methods: {
             update() {
+                const success = (msg) => {
+                    this.editing = false;
+                    this.data.body = this.body;
+
+                    flash(msg);
+                };
+
+                if (this.data.body === this.body) {
+                    success('Reply not changed...');
+                    return;
+                }
+
                 axios.patch(`/replies/${this.id}`, {
                     body: this.body
                 })
                 .then(() => {
-                    this.editing = false;
-                    this.data.body = this.body;
-
-                    flash('Reply updated!');
+                    success('Reply updated');
                 })
                 .catch(error => {
                     flash(error.response.data, 'danger');

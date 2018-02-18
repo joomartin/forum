@@ -14,9 +14,6 @@ use Illuminate\Validation\ValidationException;
 
 class ReplyController extends Controller
 {
-    /**
-     * ReplyController constructor.
-     */
     public function __construct()
     {
         $this->middleware('auth', ['except' => 'index']);
@@ -55,13 +52,9 @@ class ReplyController extends Controller
     {
         $this->authorize('update', $reply);
 
-        try {
-            $this->validate(request(), [
-                'body' => ['required', new SpamFree]
-            ]);
-        } catch (\Exception $ex) {
-            return response('Sorry, your reply could not be saved.', 422);
-        }
+        $this->validate(request(), [
+            'body' => ['required', new SpamFree]
+        ]);
 
         $reply->update(request(['body']));
     }

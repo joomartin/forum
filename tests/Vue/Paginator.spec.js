@@ -38,7 +38,7 @@ describe('Paginator', () => {
     });
 
     it('returns the correct page numbers as an array', () => {
-        for (const obj of expectedPages) {
+            for (const obj of expectedPages) {
             const newDataSet = Object.assign({}, dataSet, { current_page: obj.page });
             wrapper.setData({ dataSet: newDataSet });
 

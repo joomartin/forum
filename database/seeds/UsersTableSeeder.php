@@ -16,5 +16,18 @@ class UsersTableSeeder extends Seeder
             'email'     => 'm4rt1n.j00@gmail.com',
             'password'  => '$2y$10$O7PlCXCl8phTECT7xjanNuAMcIZ.3HRN8p2GqILk8SQy.IyLFwfBq'
         ]);
+
+        factory(\App\User::class)->create([
+            'name'      => 'JohnDoe',
+            'email'     => 'john@example.com',
+            'password'  => '$2y$10$O7PlCXCl8phTECT7xjanNuAMcIZ.3HRN8p2GqILk8SQy.IyLFwfBq'
+        ]);
+
+        factory(\App\User::class)->create([
+            'name'      => 'JaneDoe',
+            'email'     => 'jane@example.com',
+            'password'  => '$2y$10$O7PlCXCl8phTECT7xjanNuAMcIZ.3HRN8p2GqILk8SQy.IyLFwfBq'
+        ]);
+
     }
 }

@@ -55,3 +55,5 @@ Route::get('/routes', function () {
     }
     return $data;
 });
+
+Route::get('api/users', 'Api\UsersController@index');
